@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.Random;
 
-// класс процесса
+// ГЄГ«Г Г±Г± ГЇГ°Г®Г¶ГҐГ±Г±Г 
 public class Process {
 	private int id;
 	private int priority;
@@ -16,7 +16,7 @@ public class Process {
 		Random rnd = new Random();
 		this.countThreads = rnd.nextInt(5) + 1;
 		threads = new ArrayList<Thread>();
-		// добавление потока в процесс
+		// Г¤Г®ГЎГ ГўГ«ГҐГ­ГЁГҐ ГЇГ®ГІГ®ГЄГ  Гў ГЇГ°Г®Г¶ГҐГ±Г±
 		for (int i = 0; i < countThreads; i++)
 			threads.add(new Thread(i + 1, rnd.nextInt(20) + 1, rnd.nextInt(3) + 1, id)); // id, runtime, priority,
 																							// idProcess
@@ -26,7 +26,7 @@ public class Process {
 	public void setMaxTime(int quant) {
 		if (this.priority == 1)
 			this.maxTimeProcess = quant + 7;
-		else if (this.priority == 1)
+		else if (this.priority == 2)
 			this.maxTimeProcess = quant + 3;
 		else
 			this.maxTimeProcess = quant;
@@ -56,13 +56,13 @@ public class Process {
 	}
 
 	private class PlannerThreads {
-		// данные для восстановления потока после блокировки процесса
+		// Г¤Г Г­Г­Г»ГҐ Г¤Г«Гї ГўГ®Г±Г±ГІГ Г­Г®ГўГ«ГҐГ­ГЁГї ГЇГ®ГІГ®ГЄГ  ГЇГ®Г±Г«ГҐ ГЎГ«Г®ГЄГЁГ°Г®ГўГЄГЁ ГЇГ°Г®Г¶ГҐГ±Г±Г 
 		private int idThread = -1;
-		// данные для восстановления потока после блокировки процесса
+		// Г¤Г Г­Г­Г»ГҐ Г¤Г«Гї ГўГ®Г±Г±ГІГ Г­Г®ГўГ«ГҐГ­ГЁГї ГЇГ®ГІГ®ГЄГ  ГЇГ®Г±Г«ГҐ ГЎГ«Г®ГЄГЁГ°Г®ГўГЄГЁ ГЇГ°Г®Г¶ГҐГ±Г±Г 
 		private int currentThreadMaxTime = -1;
 
 		public void RunThreads(DataDiagram dataArrayList) {
-			// если планировщик ещё не запускался, выбираем поток
+			// ГҐГ±Г«ГЁ ГЇГ«Г Г­ГЁГ°Г®ГўГ№ГЁГЄ ГҐГ№Вё Г­ГҐ Г§Г ГЇГіГ±ГЄГ Г«Г±Гї, ГўГ»ГЎГЁГ°Г ГҐГ¬ ГЇГ®ГІГ®ГЄ
 			if (idThread == -1) {
 				idThread = (idThread + 1) % countThreads;
 				currentThreadMaxTime = this.giveMaxTimeThread(threads.get(idThread).getPriority());
@@ -72,24 +72,24 @@ public class Process {
 				int max = maxTimeProcess;
 				maxTimeProcess--;
 				curThread.timeDecrease();
-				// добавляем в диаграмме запись о потоке
+				// Г¤Г®ГЎГ ГўГ«ГїГҐГ¬ Гў Г¤ГЁГ ГЈГ°Г Г¬Г¬ГҐ Г§Г ГЇГЁГ±Гј Г® ГЇГ®ГІГ®ГЄГҐ
 				curThread.writeDiagram(dataArrayList);
 				currentThreadMaxTime--;
-				// если поток завершил выполнение или его время кончилось
+				// ГҐГ±Г«ГЁ ГЇГ®ГІГ®ГЄ Г§Г ГўГҐГ°ГёГЁГ« ГўГ»ГЇГ®Г«Г­ГҐГ­ГЁГҐ ГЁГ«ГЁ ГҐГЈГ® ГўГ°ГҐГ¬Гї ГЄГ®Г­Г·ГЁГ«Г®Г±Гј
 				if (curThread.threadIsExecute()) {
 					threads.remove(idThread);
 					if (threads.isEmpty())
 						return;
-					// берем следующий поток - индекс след. потока равен текущему
+					// ГЎГҐГ°ГҐГ¬ Г±Г«ГҐГ¤ГіГѕГ№ГЁГ© ГЇГ®ГІГ®ГЄ - ГЁГ­Г¤ГҐГЄГ± Г±Г«ГҐГ¤. ГЇГ®ГІГ®ГЄГ  Г°Г ГўГҐГ­ ГІГҐГЄГіГ№ГҐГ¬Гі
 					if (idThread >= threads.size())
 						idThread = 0;
 					// ArrayList thr = threads;
 					currentThreadMaxTime = this.giveMaxTimeThread(threads.get(idThread).getPriority());
 					curThread = threads.get(idThread);
 				}
-				// если макс. время потока кончилось
+				// ГҐГ±Г«ГЁ Г¬Г ГЄГ±. ГўГ°ГҐГ¬Гї ГЇГ®ГІГ®ГЄГ  ГЄГ®Г­Г·ГЁГ«Г®Г±Гј
 				else if (currentThreadMaxTime == 0) {
-					// берем следующий поток
+					// ГЎГҐГ°ГҐГ¬ Г±Г«ГҐГ¤ГіГѕГ№ГЁГ© ГЇГ®ГІГ®ГЄ
 					idThread = (idThread + 1) % threads.size();
 					currentThreadMaxTime = this.giveMaxTimeThread(threads.get(idThread).getPriority());
 					curThread = threads.get(idThread);
