@@ -35,11 +35,4 @@ public class Thread {
 	public void timeDecrease(){
 		runtimeThread--;
 	}
-	
-	public void writeDiagram(DataDiagram dataArrayList) {
-		PointDataDiagram data = new PointDataDiagram();
-		data.idThread = id;
-		data.idProcess = idProcess;
-		dataArrayList.AddData(data);
-	}
 }

@@ -7,7 +7,10 @@ public class DataDiagram {
 		dataArrayList = new ArrayList<PointDataDiagram>();
 	}
 	
-	public void AddData(PointDataDiagram data) {
+	public void AddData(int processorId, int threadId) {
+		PointDataDiagram data = new PointDataDiagram();
+		data.idProcess = processorId;
+		data.idThread = threadId;
 		dataArrayList.add(data);
 	}
 	

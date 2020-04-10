@@ -4,22 +4,21 @@ import java.util.ArrayList;
 public class PlannerProcesses {
 	private ArrayList<Process> processes = new ArrayList<>();
 	public static final int quant = 10;
-	private DataDiagram dataArrayList;
 	
 	public void addProcess(Process process) {
 		processes.add(process);
+		process.setMaxTime(quant);
 	}
 	
-	public void setDiagram(DataDiagram dataArrayList) {
-		this.dataArrayList = dataArrayList;
+	public void setTableTime(Process process, DataDiagram tableTime) {
+		process.setTableTime(tableTime);
 	}
 	
 	public void runProcesses() {
 		int idProcess = 0;
 		while (!processes.isEmpty()) {
-			processes.get(idProcess).setMaxTime(quant);
-			processes.get(idProcess).RunThreads(dataArrayList);
-			if (processes.get(idProcess).ProcessIsComplete()) {
+			processes.get(idProcess).Run();
+			if (processes.get(idProcess).processIsComplete()) {
 				processes.remove(idProcess);
 				if (idProcess >= processes.size())
 					idProcess = 0;
