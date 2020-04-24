@@ -4,7 +4,6 @@ public class TablePages {
 	private ArrayList<RecordTablePage> tablePages;
 	private int sizeOfTable;
 	private int sizeOfPage;
-	public static int bitRLength = 8;
 
 	public TablePages(int sizeOfTable, int sizeOfPage) {
 		this.sizeOfTable = sizeOfTable;
