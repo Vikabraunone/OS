@@ -31,9 +31,11 @@ public class MemoryDispatcher {
 
 	private void AlgorithmNFU(int id) {
 		RecordTablePage page = tablePages.GetRecord(id);
-		int minIndex = 0;
-		int minCount = getCountTrueR(tablePages.GetRecord(0));
-		for (int i = 1; i < tablePages.GetTable().size(); i++)
+		int minCount = 1;
+		int minIndex = -1;
+		for (int i = 1; i < TablePages.bitRLength; i++)
+			minCount = minCount * 10 + 1;
+		for (int i = 0; i < tablePages.GetTable().size(); i++)
 			if (tablePages.GetRecord(i).Existence && getCountTrueR(tablePages.GetRecord(i)) < minCount) {
 				minCount = getCountTrueR(tablePages.GetRecord(i));
 				minIndex = i;
@@ -44,8 +46,7 @@ public class MemoryDispatcher {
 				if (minIndex == i)
 					continue;
 				if (tablePages.GetRecord(i).Existence && getCountTrueR(tablePages.GetRecord(i)) == minCount) {
-					// сравниваем, к кому давно было обращение
-					minIndex = getPageLongTimeAgoR(tablePages.GetRecord(minIndex), tablePages.GetRecord(i));
+					minIndex = getPageLongTimeAgoR(tablePages.GetRecord(i), tablePages.GetRecord(i));
 				}
 			}
 		}
@@ -60,7 +61,9 @@ public class MemoryDispatcher {
 		for (RecordTablePage page : tablePages.GetTable()) {
 			if (!page.Existence)
 				continue;
-			shiftBits(page.id == idPage, page);
+			page.R /= 10;
+			if (page.id == idPage)
+				page.R += Math.pow(10, TablePages.bitRLength - 1);
 		}
 	}
 
@@ -72,30 +75,19 @@ public class MemoryDispatcher {
 		return virtualAddress % tablePages.GetSizeOfPage();
 	}
 
-	private void shiftBits(boolean R, RecordTablePage page) {
-		boolean[] bits = page.GetBitsR();
-		for (int i = bits.length - 1; i > 0; i--)
-			bits[i] = bits[i - 1];
-		bits[0] = R;
-	}
-
 	private int getCountTrueR(RecordTablePage page) {
 		int count = 0;
-		boolean[] bits = page.GetBitsR();
-		for (int i = bits.length - 1; i >= 0; i--) {
-			if (bits[i] == true)
+		int bufR = page.R;
+		while (bufR > 0) {
+			if (bufR % 10 == 1)
 				count++;
+			bufR /= 10;
 		}
 		return count;
 	}
 
 	private int getPageLongTimeAgoR(RecordTablePage minPage, RecordTablePage page) {
-		for (int i = 0; i < minPage.R.length; i++)
-			if (minPage.R[i] == true && page.R[i] == false)
-				return page.id;
-			else if (minPage.R[i] == false && page.R[i] == true)
-				return minPage.id;
-		return minPage.id;
+		return minPage.R <= page.R ? minPage.id : page.id;
 	}
 
 	private void printTables() {
