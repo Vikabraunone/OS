@@ -93,6 +93,8 @@ public class MemoryDispatcher {
 		for (int i = 0; i < minPage.R.length; i++)
 			if (minPage.R[i] == true && page.R[i] == false)
 				return page.id;
+			else if (minPage.R[i] == false && page.R[i] == true)
+				return minPage.id;
 		return minPage.id;
 	}
 

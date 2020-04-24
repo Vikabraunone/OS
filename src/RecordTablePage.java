@@ -7,7 +7,7 @@ public class RecordTablePage {
 	public boolean Existence = false;
 	
 	// бит ссылки/бит обращения
-	public boolean[] R = {false, false, false, false};
+	public boolean[] R = {false, false, false, false, false, false, false, false};
 	
 	public boolean[] GetBitsR()
 	{
