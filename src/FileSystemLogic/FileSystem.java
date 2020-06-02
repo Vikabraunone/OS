@@ -4,12 +4,10 @@ import java.util.HashMap;
 
 public class FileSystem {
 	private Disk disk;
-	private FileAllocationTable fat;
 	private HashMap<String, Directory> directories;
 
 	public FileSystem(int diskSize, int sectionSize, Directory root, String path) {
 		disk = new Disk(diskSize, sectionSize);
-		fat = new FileAllocationTable(diskSize / sectionSize);
 		directories = new HashMap<String, Directory>();
 		directories.put(path, root);
 	}
@@ -25,13 +23,13 @@ public class FileSystem {
 				if (indexBegin != -1) {
 					File file = new File(name, extension, indexBegin, (int) sizeData);
 					dir.addFile(file);
-					writeFileGroupBlocks(countBlocks, (int) sizeData, indexBegin);
+					writeFileGroupBlocks(file, countBlocks, (int) sizeData, indexBegin);
 					return true;
 				} else {
 					indexBegin = getFirstFreeBlock();
 					File file = new File(name, extension, indexBegin, (int) sizeData);
 					dir.addFile(file);
-					writeFile(countBlocks, (int) sizeData, indexBegin);
+					writeFile(file, countBlocks, (int) sizeData, indexBegin);
 					return true;
 				}
 			}
@@ -54,13 +52,9 @@ public class FileSystem {
 	}
 
 	public void deleteFile(String path, File file) {
-		int prevIndex = file.getFirstBlock();
-		int index = prevIndex;
-		while (fat.getBlock(index) != -1) {
-			index = fat.getBlock(prevIndex);
-			fat.setBlock(prevIndex, -1);
-			prevIndex = index;
-		}
+		ArrayList<Integer> idBlocks = file.getBlocks();
+		for(int i = 0; i < idBlocks.size(); i++)
+			disk.writeDataIntoSector(idBlocks.get(i), -1);
 		directories.get(path).deleteFile(file);
 	}
 
@@ -86,15 +80,14 @@ public class FileSystem {
 	public void deleteDirectory(String path, Directory directory) {
 		if (directories.get(path).getDirectory(directory)) {
 			directories.get(path).deleteDirectory(directory);
-			;
 			directories.remove(path);
 		}
 	}
 
 	private boolean haveFreeBlocks(int countBlocksFile) {
 		int countFreeBlocks = 0;
-		for (int i = 0; i < fat.size(); i++)
-			if (fat.getBlock(i) == -1)
+		for (int i = 0; i < disk.countBlocks(); i++)
+			if (disk.readDataFromSector(i) == -1)
 				countFreeBlocks++;
 		return countFreeBlocks >= countBlocksFile;
 	}
@@ -102,56 +95,70 @@ public class FileSystem {
 	private int getBeginIndexGroupBlocks(int countBlocks) {
 		int freeBlocks = 0;
 		int indexBegin = -1;
-		for (int i = 0; i < fat.size(); i++)
-			if (fat.getBlock(i) == -1) {
+		for (int i = 0; i < disk.countBlocks(); i++) {
+			if (disk.readDataFromSector(i) == -1)
+			{
 				if (indexBegin == -1)
 					indexBegin = i;
 				freeBlocks++;
 				if (freeBlocks == countBlocks)
 					return indexBegin;
-			} else {
+			}
+			else
+			{
 				indexBegin = -1;
 				freeBlocks = 0;
 			}
+		}
 		return -1;
 	}
 
 	private int getFirstFreeBlock() throws Exception {
-		for (int i = 0; i < fat.size(); i++)
-			if (fat.getBlock(i) == -1)
+		for (int i = 0; i < disk.countBlocks(); i++)
+			if (disk.readDataFromSector(i) == -1)
 				return i;
 		throw new Exception("На диске нет места! Метод getFirstFreeBlock");
 	}
 
-	private void writeFileGroupBlocks(int countBlocks, int sizeData, int index) {
-		while (countBlocks > 1) {
+	private void writeFileGroupBlocks(File file, int countBlocks, int sizeData, int index) {
+		if (sizeData > Block.SizeBlock) {
 			sizeData -= Block.SizeBlock;
 			disk.writeDataIntoSector(index, Block.SizeBlock);
-			fat.setBlock(index, index + 1);
 			index++;
 			countBlocks--;
-		}
-		disk.writeDataIntoSector(index, sizeData);
-		fat.setBlock(index, -1);
-	}
-
-	private void writeFile(int countBlocks, int sizeData, int index) throws Exception {
-		int prevIndex = index;
-		while (countBlocks > 1) {
-			index++;
-			if (fat.getBlock(index) == -1) {
+			while (countBlocks > 1) {
 				sizeData -= Block.SizeBlock;
 				disk.writeDataIntoSector(index, Block.SizeBlock);
-				fat.setBlock(prevIndex, index);
-				prevIndex = index;
+				file.addBlock(index);
+				index++;
+				countBlocks--;
 			}
-			countBlocks--;
 		}
-		index++;
-		while (index - 1 < fat.size()) {
-			if (fat.getBlock(index) == -1) {
+		disk.writeDataIntoSector(index, sizeData);
+		file.addBlock(index);
+	}
+
+	private void writeFile(File file, int countBlocks, int sizeData, int index) throws Exception {
+		if (sizeData > Block.SizeBlock) {
+			sizeData -= Block.SizeBlock;
+			disk.writeDataIntoSector(index, Block.SizeBlock);
+			index++;
+			countBlocks--;
+
+			while (countBlocks > 1 && index < disk.countBlocks()) {
+				if (disk.readDataFromSector(index) == -1) {
+					sizeData -= Block.SizeBlock;
+					disk.writeDataIntoSector(index, Block.SizeBlock);
+					file.addBlock(index);
+					index++;
+					countBlocks--;
+				}
+			}
+		}
+		while (index < disk.countBlocks()) {
+			if (disk.readDataFromSector(index) == -1) {
+				file.addBlock(index);
 				disk.writeDataIntoSector(index, sizeData);
-				fat.setBlock(prevIndex, index);
 				return;
 			}
 			index++;
@@ -169,15 +176,9 @@ public class FileSystem {
 		else
 			return null;
 	}
-
-	public ArrayList<Integer> blocksFile(File file) {
-		ArrayList<Integer> list = new ArrayList<Integer>();
-		int index = file.getFirstBlock();
-		list.add(index);
-		while (fat.getBlock(index) != -1) {
-			index = fat.getBlock(index);
-			list.add(index);
-		}
-		return list;
+	
+	public ArrayList<Integer> getFileBlocks(File file)
+	{
+		return file.getBlocks();
 	}
 }

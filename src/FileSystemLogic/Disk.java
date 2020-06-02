@@ -25,4 +25,14 @@ public class Disk {
 			throw new IndexOutOfBoundsException();
 		}
 	}
+	
+	public Block getBlock(int index)
+	{
+		return blocks[index];
+	}
+	
+	public int countBlocks()
+	{
+		return blocks.length;
+	}
 }

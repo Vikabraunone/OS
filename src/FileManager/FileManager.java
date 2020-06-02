@@ -282,7 +282,7 @@ public class FileManager {
 				File file = currentDir.isExistFile(text.substring(0, lastIndex),
 						text.substring(lastIndex + 1, text.length()));
 				if (file != null) {
-					ArrayList<Integer> idBlocks = fileSystem.blocksFile(file);
+					ArrayList<Integer> idBlocks = fileSystem.getFileBlocks(file);
 					panel.setValues(idBlocks);
 					panel.repaint();
 				}

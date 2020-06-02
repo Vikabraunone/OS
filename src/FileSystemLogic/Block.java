@@ -2,8 +2,8 @@ package FileSystemLogic;
 
 public class Block {
 	public static int SizeBlock;
-	private int data = 0;
-	private int id;
+	private int data = -1;
+	private int id = -1;
 	
 	public Block(int id)
 	{
@@ -18,5 +18,10 @@ public class Block {
 	public int readData()
 	{
 		return data;
+	}
+	
+	public int idBlock()
+	{
+		return id;
 	}
 }
