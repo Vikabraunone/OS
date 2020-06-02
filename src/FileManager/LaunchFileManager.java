@@ -1,17 +1,14 @@
+package FileManager;
 import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JButton;
-import javax.swing.JDialog;
-
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class InitializeWindow {
-
+public class LaunchFileManager {
 	private JFrame frame;
 	private JTextField textFieldDisk;
 	private JTextField textFieldBlock;
@@ -23,7 +20,7 @@ public class InitializeWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					InitializeWindow window = new InitializeWindow();
+					LaunchFileManager window = new LaunchFileManager();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -35,7 +32,7 @@ public class InitializeWindow {
 	/**
 	 * Create the application.
 	 */
-	public InitializeWindow() {
+	public LaunchFileManager() {
 		initialize();
 	}
 
@@ -48,20 +45,20 @@ public class InitializeWindow {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
-		JLabel label = new JLabel("\u0414\u0438\u0441\u043A\u043E\u0432\u043E\u0439 \u0440\u0430\u0437\u0434\u0435\u043B:");
-		label.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		label.setBounds(39, 21, 159, 35);
-		frame.getContentPane().add(label);
+		JLabel labelDiskSize = new JLabel("\u0414\u0438\u0441\u043A\u043E\u0432\u043E\u0439 \u0440\u0430\u0437\u0434\u0435\u043B:");
+		labelDiskSize.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		labelDiskSize.setBounds(39, 21, 159, 35);
+		frame.getContentPane().add(labelDiskSize);
 		
 		textFieldDisk = new JTextField();
 		textFieldDisk.setBounds(208, 30, 86, 20);
 		frame.getContentPane().add(textFieldDisk);
 		textFieldDisk.setColumns(10);
 		
-		JLabel label_1 = new JLabel("\u0421\u0435\u043A\u0442\u043E\u0440 \u0434\u0438\u0441\u043A\u0430:");
-		label_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		label_1.setBounds(39, 67, 159, 35);
-		frame.getContentPane().add(label_1);
+		JLabel labelBlock = new JLabel("\u0421\u0435\u043A\u0442\u043E\u0440 \u0434\u0438\u0441\u043A\u0430:");
+		labelBlock.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		labelBlock.setBounds(39, 67, 159, 35);
+		frame.getContentPane().add(labelBlock);
 		
 		textFieldBlock = new JTextField();
 		textFieldBlock.setColumns(10);

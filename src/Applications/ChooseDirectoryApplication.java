@@ -1,9 +1,13 @@
+package Applications;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.JButton;
 import javax.swing.ListSelectionModel;
+import FileSystemLogic.Directory;
+import FileSystemLogic.File;
+import FileSystemLogic.FileSystem;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JList;

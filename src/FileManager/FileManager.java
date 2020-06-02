@@ -1,9 +1,16 @@
+package FileManager;
 import java.awt.Color;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+
+import Applications.ChooseDirectoryApplication;
+import Applications.PanelMemory;
+import FileSystemLogic.Directory;
+import FileSystemLogic.File;
+import FileSystemLogic.FileSystem;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;

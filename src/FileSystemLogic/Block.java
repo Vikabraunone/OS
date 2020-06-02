@@ -1,3 +1,5 @@
+package FileSystemLogic;
+
 public class Block {
 	public static int SizeBlock;
 	private int data = 0;

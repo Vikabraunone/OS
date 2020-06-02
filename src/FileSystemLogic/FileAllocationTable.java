@@ -1,3 +1,4 @@
+package FileSystemLogic;
 public class FileAllocationTable {
 	private int[] fat;
 	

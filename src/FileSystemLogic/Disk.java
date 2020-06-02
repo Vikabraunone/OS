@@ -1,3 +1,4 @@
+package FileSystemLogic;
 //дисковой раздел
 public class Disk {
 	private Block[] blocks;
